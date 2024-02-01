@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>dare to click me</title>
+
+  <link rel='icon' href='https://i.imgur.com/Jl28xbJ.png' />
+
+  <meta name="theme-color" content="#5865F2" />
+  <meta property="og:title" content="dare to click me" />
+  <meta property="og:image" content="https://i.imgur.com/Jl28xbJ.png" />
+  <meta property="og:url" content="https://daretoclickme.sujalgoel.me/" />
+
+  <meta property="twitter:title" content="dare to click me" />
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:image" content="https://i.imgur.com/Jl28xbJ.png" />
+  <meta property="twitter:url" content="https://daretoclickme.sujalgoel.me/" />
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      cursor: none;
+      outline: none;
+      user-select: none;
+      -ms-user-select: none;
+      -moz-user-select: none;
+      -webkit-user-drag: none;
+      -webkit-user-select: none;
+    }
+
+    body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background-color: black;
+    }
+
+    button {
+      top: 50%;
+      left: 50%;
+      border: none;
+      color: black;
+      font-size: 24px;
+      padding: 4px 8px;
+      position: absolute;
+      border-radius: 4px;
+      background-color: #f6c83e;
+      transform: translate(-50%, -50%);
+    }
+
+    cursor {
+      width: 24px;
+      height: 24px;
+      display: block;
+      position: absolute;
+      pointer-events: none;
+      background-size: 24px;
+      background-repeat: no-repeat;
+      background-image: url("https://i.imgur.com/Jl28xbJ.png");
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <button>dare to click me</button>
+  <script>
+    const createCursor = (width, height) => {
+      const cursor = {
+        width: width,
+        height: height,
+        x: Math.random() * width,
+        y: Math.random() * height,
+        factor: 0.8 + Math.random() * 0.4,
+        angle: Math.random() * 2 * Math.PI,
+        el: document.createElement('cursor'),
+
+        move: function (e) {
+          const v = { x: e.movementX, y: e.movementY };
+          this.scale(v);
+          this.rotate(v);
+          this.x = (this.x + v.x + width) % width;
+          this.y = (this.y + v.y + height) % height;
+          this.updatePos();
+        },
+
+        rotate: function (v) {
+          v.x = v.x * Math.cos(this.angle) - v.y * Math.sin(this.angle);
+          v.y = v.x * Math.sin(this.angle) + v.y * Math.cos(this.angle);
+        },
+
+        scale: function (v) {
+          v.x *= this.factor;
+          v.y *= this.factor;
+        },
+
+        updatePos: function () {
+          this.el.style.top = this.y + 'px';
+          this.el.style.left = this.x + 'px';
+        },
+      };
+
+      cursor.updatePos();
+      document.body.appendChild(cursor.el);
+
+      return cursor;
+    };
+
+    const createFollowCursor = () => {
+      const followCursor = createCursor(0, 0);
+      followCursor.move = function (e) {
+        this.x = e.clientX;
+        this.y = e.clientY;
+        this.updatePos();
+      };
+      return followCursor;
+    };
+
+    (function () {
+      const cursors = [];
+      let numCursors = 100;
+      const button = document.querySelector('button');
+      const box = document.body.getBoundingClientRect();
+
+      for (let i = 0; i < numCursors; i++) {
+        cursors.push(createCursor(box.width, box.height));
+      }
+
+      cursors.push(createFollowCursor());
+
+      addEventListener('mousemove', (e) => {
+        cursors.forEach((cursor) => cursor.move(e));
+      });
+
+      button.addEventListener('click', () => {
+        window.location.replace('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+      });
+
+      addEventListener('click', (e) => {
+        if (e.target.tagName === 'BUTTON') return;
+
+        if (numCursors <= 10000) {
+          numCursors += numCursors;
+
+          console.log(numCursors);
+
+          for (let i = 0; i < 10; i++) {
+            cursors.push(createCursor(box.width, box.height));
+          }
+        }
+      });
+
+      addEventListener('contextmenu', (event) => {
+        event.preventDefault();
+      });
+    })();
+  </script>
+</body>
+
+</html>
